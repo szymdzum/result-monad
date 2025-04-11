@@ -3,6 +3,19 @@
   "version": "0.1.0",
   "license": "MIT",
   "exports": "./mod.ts",
+  "description": "A comprehensive Result type implementation for TypeScript with robust error handling and composition utilities",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kumak/result-monad"
+  },
+  "keywords": [
+    "typescript",
+    "result",
+    "monad",
+    "functional",
+    "error-handling",
+    "deno"
+  ],
   "tasks": {
     "test": "deno test --no-check",
     "check": "deno check mod.ts",
@@ -50,5 +63,11 @@
       "**/*.test.ts",
       "tests/"
     ]
+  },
+  "imports": {
+    "jsr:@std/assert": "jsr:@std/assert@^0.221.0"
+  },
+  "npmRegistry": {
+    "provenance": true
   }
 }

@@ -9,8 +9,44 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write  # Needed for creating tags
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - run: deno publish
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+      - name: Cache Deno dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.deno
+            ~/.cache/deno
+          key: ${{ runner.os }}-deno-${{ hashFiles('deno.lock') }}
+          restore-keys: ${{ runner.os }}-deno-
+      - name: Lint code
+        run: deno lint
+      - name: Run tests
+        run: deno test --no-check
+      - name: Get version from deno.json
+        id: get_version
+        run: echo "VERSION=$(jq -r .version deno.json)" >> $GITHUB_OUTPUT
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git ls-remote --tags origin refs/tags/v${{ steps.get_version.outputs.VERSION }} | grep -q "refs/tags/v${{ steps.get_version.outputs.VERSION }}"; then
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Create and push tag
+        if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a v${{ steps.get_version.outputs.VERSION }} -m "Release v${{ steps.get_version.outputs.VERSION }}"
+          git push origin v${{ steps.get_version.outputs.VERSION }}
+      - name: Publish to JSR
+        if: success()
+        run: deno publish

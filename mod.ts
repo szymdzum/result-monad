@@ -48,7 +48,7 @@ export {
 } from './src/utils.ts';
 
 // Export validation utilities
-export { integrations as validationIntegrations, validate, Validator } from './src/validation.ts';
+export { validate, Validator } from './src/validation.ts';
 
 // Export individual functions from Result (for tree-shaking optimization)
 import { Result as ResultClass } from './src/result.ts';

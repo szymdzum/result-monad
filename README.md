@@ -3,6 +3,10 @@
 A comprehensive Result type implementation for TypeScript with robust error handling and composition
 utilities.
 
+[![JSR Version](https://jsr.io/badges/@kumak/result-monad)](https://jsr.io/@kumak/result-monad)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/kumak/result-monad/deno.yml?branch=main)](https://github.com/kumak/result-monad/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 - 🚀 Full TypeScript support with proper type inference
@@ -18,7 +22,28 @@ utilities.
 ### Deno
 
 ```ts
-import { fail, ok, Result } from 'jsr:@kumak/result-monad';
+// Import from JSR
+import { Result, ok, fail } from "jsr:@kumak/result-monad";
+
+// Or import specific version
+import { Result, ok, fail } from "jsr:@kumak/result-monad@0.1.0";
+```
+
+### Node.js
+
+```bash
+# npm
+npm install @kumak/result-monad
+
+# yarn
+yarn add @kumak/result-monad
+
+# pnpm
+pnpm add @kumak/result-monad
+```
+
+```ts
+import { Result, ok, fail } from "@kumak/result-monad";
 ```
 
 ## Basic Usage
