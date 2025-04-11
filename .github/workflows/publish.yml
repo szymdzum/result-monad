@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Needed for creating tags
+      contents: write # Needed for creating tags
       id-token: write
     steps:
       - uses: actions/checkout@v4

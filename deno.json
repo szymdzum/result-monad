@@ -22,7 +22,10 @@
     "lint": "deno lint",
     "fmt": "deno fmt",
     "coverage": "deno test --coverage=cov_profile --no-check && deno coverage cov_profile",
-    "publish": "deno publish --dry-run"
+    "publish": "deno publish --dry-run",
+    "test:changed": "./scripts/test-changed.sh",
+    "lint:changed": "./scripts/lint-changed.sh",
+    "fmt:changed": "./scripts/fmt-changed.sh"
   },
   "fmt": {
     "indentWidth": 2,

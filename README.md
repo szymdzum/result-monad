@@ -23,10 +23,10 @@ utilities.
 
 ```ts
 // Import from JSR
-import { Result, ok, fail } from "jsr:@kumak/result-monad";
+import { fail, ok, Result } from 'jsr:@kumak/result-monad';
 
 // Or import specific version
-import { Result, ok, fail } from "jsr:@kumak/result-monad@0.1.0";
+import { fail, ok, Result } from 'jsr:@kumak/result-monad@0.1.0';
 ```
 
 ### Node.js
@@ -43,7 +43,7 @@ pnpm add @kumak/result-monad
 ```
 
 ```ts
-import { Result, ok, fail } from "@kumak/result-monad";
+import { fail, ok, Result } from '@kumak/result-monad';
 ```
 
 ## Basic Usage
