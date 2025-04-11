@@ -1,9 +1,9 @@
 // @ts-nocheck - Deno imports are not recognized by TypeScript
-import { assertEquals, assertThrows } from "https://deno.land/std@0.209.0/testing/asserts.ts";
+import { assertEquals, assertThrows } from "jsr:@std/assert";
 import { Result } from "./result.ts";
 import { ValidationError, TechnicalError } from "./errors.ts";
 
-const { test } = Deno;
+const { test: _test } = Deno;
 
 Deno.test("Result - Basic functionality", async (t) => {
   await t.step("creates a success result", () => {
@@ -165,13 +165,13 @@ Deno.test("Result - Pattern matching and fallbacks", async (t) => {
 
   await t.step("recover returns same result on success", () => {
     const result = Result.ok<number, Error>(42);
-    const recovered = result.recover(e => Result.ok<number, Error>(0));
+    const recovered = result.recover(_e => Result.ok<number, Error>(0));
     assertEquals(recovered.value, 42);
   });
 
   await t.step("recover returns new result on failure", () => {
     const result = Result.fail<number, Error>(new Error("Error"));
-    const recovered = result.recover(e => Result.ok<number, Error>(0));
+    const recovered = result.recover(_e => Result.ok<number, Error>(0));
     assertEquals(recovered.value, 0);
   });
 
@@ -193,7 +193,7 @@ Deno.test("Result - Pattern matching and fallbacks", async (t) => {
 Deno.test("Result - Async operations", async (t) => {
   await t.step("asyncMap transforms a success value", async () => {
     const result = Result.ok<number, Error>(42);
-    const mapped = await result.asyncMap(async x => {
+    const mapped = await result.asyncMap(x => {
       return x * 2;
     });
     assertEquals(mapped.isSuccess, true);
@@ -203,7 +203,7 @@ Deno.test("Result - Async operations", async (t) => {
   await t.step("asyncMap doesn't transform a failure", async () => {
     const error = new Error("Error");
     const result = Result.fail<number, Error>(error);
-    const mapped = await result.asyncMap(async x => {
+    const mapped = await result.asyncMap(x => {
       return x * 2;
     });
     assertEquals(mapped.isSuccess, false);
@@ -212,7 +212,7 @@ Deno.test("Result - Async operations", async (t) => {
 
   await t.step("asyncFlatMap chains operations", async () => {
     const result = Result.ok<number, Error>(42);
-    const chained = await result.asyncFlatMap(async x => {
+    const chained = await result.asyncFlatMap(x => {
       return Result.ok<string, Error>(`Value: ${x}`);
     });
     assertEquals(chained.isSuccess, true);
@@ -222,7 +222,7 @@ Deno.test("Result - Async operations", async (t) => {
   await t.step("asyncFlatMap preserves failure", async () => {
     const error = new Error("Error");
     const result = Result.fail<number, Error>(error);
-    const chained = await result.asyncFlatMap(async x => {
+    const chained = await result.asyncFlatMap(x => {
       return Result.ok<string, Error>(`Value: ${x}`);
     });
     assertEquals(chained.isSuccess, false);
@@ -265,7 +265,7 @@ Deno.test("Result - Async operations with cancellation", async (t) => {
     controller.abort(); // Already aborted
 
     const mapped = await result.asyncMap(
-      async x => x * 2,
+      x => x * 2,
       controller.signal
     );
 
@@ -279,7 +279,7 @@ Deno.test("Result - Async operations with cancellation", async (t) => {
     controller.abort(); // Already aborted
 
     const mapped = await result.asyncFlatMap(
-      async x => Result.ok<string, Error>(`Value: ${x}`),
+      x => Result.ok<string, Error>(`Value: ${x}`),
       controller.signal
     );
 

@@ -1,5 +1,5 @@
 // @ts-nocheck - Disable type checking for tests
-import { assertEquals } from "https://deno.land/std@0.209.0/testing/asserts.ts";
+import { assertEquals } from "jsr:@std/assert";
 import {
   ResultError,
   ValidationError,
