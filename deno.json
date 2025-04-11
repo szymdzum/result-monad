@@ -60,7 +60,8 @@
       "LICENSE",
       "README.md",
       "src/**/*.ts",
-      "mod.ts"
+      "mod.ts",
+      "docs/**/*"
     ],
     "exclude": [
       "**/*.test.ts",
