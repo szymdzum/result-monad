@@ -1,0 +1,54 @@
+{
+  "name": "@kumak/result-monad-ts",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": "./mod.ts",
+  "tasks": {
+    "test": "deno test --allow-none",
+    "check": "deno check mod.ts",
+    "lint": "deno lint",
+    "fmt": "deno fmt",
+    "coverage": "deno test --allow-none --coverage=cov_profile && deno coverage cov_profile",
+    "publish": "deno publish --dry-run"
+  },
+  "fmt": {
+    "indentWidth": 2,
+    "singleQuote": true,
+    "lineWidth": 100,
+    "proseWrap": "always"
+  },
+  "lint": {
+    "rules": {
+      "include": [
+        "explicit-function-return-type",
+        "explicit-module-boundary-types",
+        "ban-untagged-todo"
+      ]
+    }
+  },
+  "exclude": [
+    "coverage",
+    ".vscode",
+    "cov_profile"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "lib": ["deno.window"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
+  },
+  "publish": {
+    "include": [
+      "LICENSE",
+      "README.md",
+      "src/**/*.ts",
+      "mod.ts"
+    ],
+    "exclude": [
+      "**/*.test.ts",
+      "tests/"
+    ]
+  }
+}

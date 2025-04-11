@@ -1,0 +1,26 @@
+# Deno specific
+deno.lock
+.deno/
+
+# Coverage directories
+cov_profile/
+coverage/
+lcov.info
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Optional npm cache directory (if you use npm alongside Deno)
+.npm
+node_modules/
+npm-debug.log*
+package-lock.json
