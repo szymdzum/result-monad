@@ -1,12 +1,12 @@
 {
-  "name": "@kumak/result-monad",
+  "name": "@szymdzum/result-monad",
   "version": "0.1.0",
   "license": "MIT",
   "exports": "./mod.ts",
   "description": "A comprehensive Result type implementation for TypeScript with robust error handling and composition utilities",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kumak/result-monad"
+    "url": "https://github.com/szymdzum/result-monad"
   },
   "keywords": [
     "typescript",
