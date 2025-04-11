@@ -33,23 +33,23 @@ import { fail, ok, Result } from 'jsr:@szymdzum/result-monad@0.1.0';
 
 ```bash
 # npm
-npm install @kumak/result-monad
+npm install @szymdzum/result-monad
 
 # yarn
-yarn add @kumak/result-monad
+yarn add @szymdzum/result-monad
 
 # pnpm
-pnpm add @kumak/result-monad
+pnpm add @szymdzum/result-monad
 ```
 
 ```ts
-import { fail, ok, Result } from '@kumak/result-monad';
+import { fail, ok, Result } from '@szymdzum/result-monad';
 ```
 
 ## Basic Usage
 
 ```ts
-import { Result } from '@kumak/result-monad';
+import { Result } from '@szymdzum/result-monad';
 
 // Create a success result
 const success = Result.ok(42);
