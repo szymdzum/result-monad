@@ -36,18 +36,28 @@ export async function tryCatchAsync<T>(fn: () => Promise<T>): Promise<Result<T, 
 }
 
 /**
+ * Type definition for Node.js style callback functions
+ */
+type NodeCallback<T> = (error: Error | null, result: T) => void;
+
+/**
+ * Type for function arguments excluding the callback
+ */
+type NodeCallbackArgs = unknown[];
+
+/**
  * Wraps a callback-style function to return a Promise<Result>
  * @param fn Function with a Node.js style callback (error, result)
  * @param args Arguments to pass to the function
  * @returns Promise that resolves to a Result
  */
 export function promisifyWithResult<T>(
-  fn: (...args: any[]) => void,
-  ...args: any[]
+  fn: (...args: [...NodeCallbackArgs, NodeCallback<T>]) => void,
+  ...args: NodeCallbackArgs
 ): Promise<Result<T, Error>> {
   return new Promise((resolve) => {
     try {
-      fn(...args, (error: any, result: T) => {
+      fn(...args, (error: Error | null, result: T) => {
         if (error) {
           resolve(
             Result.fail<T, Error>(

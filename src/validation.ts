@@ -326,172 +326,101 @@ export function validate<T>(value: T): Validator<T> {
   return Validator.for(value);
 }
 
-/**
- * Integration helpers for popular frameworks.
- */
-export namespace integrations {
-  /**
-   * Integrates with Express.js middleware.
-   *
-   * @param validationFn - A function that applies validation rules
-   * @returns Express middleware that validates the request body
-   *
-   * @example
-   * ```typescript
-   * app.post('/users', validateBody(body =>
-   *   body.property('name', v => v.notEmpty())
-   *       .property('email', v => v.email())
-   * ), (req, res) => {
-   *   // Handle the valid request
-   *   res.json({ success: true });
-   * });
-   * ```
-   */
-  export const validateBody = <T>(
-    validationFn: (validator: Validator<T>) => Validator<T>,
-  ): (req: any, res: any, next: any) => void => {
-    return (req: any, res: any, next: any) => {
-      const result = validationFn(Validator.for(req.body)).validate();
-
-      if (result.isSuccess) {
-        next();
-      } else {
-        res.status(400).json({
-          error: 'Validation error',
-          details: result.error.message,
-        });
-      }
-    };
-  };
-
-  /**
-   * Integrates with React Hook Form.
-   *
-   * @param validationFn - A function that applies validation rules
-   * @returns A validation function compatible with React Hook Form's resolver pattern
-   *
-   * @example
-   * ```tsx
-   * const validationSchema = createHookFormResolver(form =>
-   *   form.property('name', v => v.notEmpty())
-   *       .property('email', v => v.email())
-   * );
-   *
-   * // In your component
-   * const { register, handleSubmit, formState } = useForm({
-   *   resolver: validationSchema
-   * });
-   * ```
-   */
-  export const createHookFormResolver = <T>(
-    validationFn: (validator: Validator<T>) => Validator<T>,
-  ): (data: T) => any => {
-    return (data: T) => {
-      const result = validationFn(Validator.for(data)).validate();
-
-      if (result.isSuccess) {
-        return {
-          values: data,
-          errors: {},
-        };
-      }
-
-      // Parse error message into an object structure compatible with React Hook Form
-      const errorDetails = result.error.message.split(', ');
-      const errors: Record<string, { message: string; type: string }> = {};
-
-      for (const detail of errorDetails) {
-        const parts = detail.split(' ');
-        const fieldName = parts[0];
-        const message = detail;
-
-        errors[fieldName] = {
-          type: 'validation',
-          message,
-        };
-      }
-
-      return {
-        values: {},
-        errors,
-      };
-    };
-  };
-
-  /**
-   * Integrates with Zod validation library.
-   *
-   * @param schema - A Zod schema
-   * @returns A function that converts Zod validation to Result
-   *
-   * @example
-   * ```typescript
-   * const userSchema = z.object({
-   *   name: z.string().min(1),
-   *   email: z.string().email()
-   * });
-   *
-   * const validateUser = fromZod(userSchema);
-   * const result = validateUser(userData);
-   * ```
-   */
-  export const fromZod = <T>(schema: any): (data: T) => Result<T, ValidationError> => {
-    return (data: T) => {
-      try {
-        schema.parse(data);
-        return Result.ok<T, ValidationError>(data);
-      } catch (error) {
-        // Zod provides validation errors in a structured format
-        if (error.errors) {
-          const errorMessages = error.errors.map(
-            (err: any) => `${err.path.join('.')}: ${err.message}`,
-          );
-          return Result.fail<T, ValidationError>(new ValidationError(errorMessages.join(', ')));
-        }
-        return Result.fail<T, ValidationError>(new ValidationError(String(error)));
-      }
-    };
-  };
-
-  /**
-   * Integrates with Yup validation library.
-   *
-   * @param schema - A Yup schema
-   * @returns A function that converts Yup validation to Result
-   *
-   * @example
-   * ```typescript
-   * const userSchema = yup.object({
-   *   name: yup.string().required(),
-   *   email: yup.string().email().required()
-   * });
-   *
-   * const validateUser = fromYup(userSchema);
-   * const result = validateUser(userData);
-   * ```
-   */
-  export const fromYup = <T>(schema: any): (data: T) => Result<T, ValidationError> => {
-    return (data: T) => {
-      try {
-        schema.validateSync(data, { abortEarly: false });
-        return Result.ok<T, ValidationError>(data);
-      } catch (error) {
-        if (error.inner) {
-          const errorMessages = error.inner.map(
-            (err: any) => `${err.path}: ${err.message}`,
-          );
-          return Result.fail<T, ValidationError>(new ValidationError(errorMessages.join(', ')));
-        }
-        return Result.fail<T, ValidationError>(new ValidationError(String(error)));
-      }
-    };
-  };
+// Zod schema interface
+export interface ZodSchema<T> {
+  parse: (data: unknown) => T;
 }
+
+// Zod error interface
+export interface ZodError {
+  errors: Array<{ path: string[]; message: string }>;
+}
+
+/**
+ * Integrates with Zod validation library.
+ *
+ * @param schema - A Zod schema
+ * @returns A function that converts Zod validation to Result
+ *
+ * @example
+ * ```typescript
+ * const userSchema = z.object({
+ *   name: z.string().min(1),
+ *   email: z.string().email()
+ * });
+ *
+ * const validateUser = fromZod(userSchema);
+ * const result = validateUser(userData);
+ * ```
+ */
+export const fromZod = <T>(schema: ZodSchema<T>): (data: T) => Result<T, ValidationError> => {
+  return (data: T) => {
+    try {
+      schema.parse(data);
+      return Result.ok<T, ValidationError>(data);
+    } catch (error) {
+      // Zod provides validation errors in a structured format
+      if ((error as ZodError).errors) {
+        const errorMessages = (error as ZodError).errors.map(
+          (err) => `${err.path.join('.')}: ${err.message}`,
+        );
+        return Result.fail<T, ValidationError>(new ValidationError(errorMessages.join(', ')));
+      }
+      return Result.fail<T, ValidationError>(new ValidationError(String(error)));
+    }
+  };
+};
+
+// Yup schema interface
+export interface YupSchema<T> {
+  validateSync: (data: unknown, options?: { abortEarly?: boolean }) => T;
+}
+
+// Yup error interface
+export interface YupError {
+  inner: Array<{ path: string; message: string }>;
+}
+
+/**
+ * Integrates with Yup validation library.
+ *
+ * @param schema - A Yup schema
+ * @returns A function that converts Yup validation to Result
+ *
+ * @example
+ * ```typescript
+ * const userSchema = yup.object({
+ *   name: yup.string().required(),
+ *   email: yup.string().email().required()
+ * });
+ *
+ * const validateUser = fromYup(userSchema);
+ * const result = validateUser(userData);
+ * ```
+ */
+export const fromYup = <T>(schema: YupSchema<T>): (data: T) => Result<T, ValidationError> => {
+  return (data: T) => {
+    try {
+      schema.validateSync(data, { abortEarly: false });
+      return Result.ok<T, ValidationError>(data);
+    } catch (error) {
+      if ((error as YupError).inner) {
+        const errorMessages = (error as YupError).inner.map(
+          (err) => `${err.path}: ${err.message}`,
+        );
+        return Result.fail<T, ValidationError>(new ValidationError(errorMessages.join(', ')));
+      }
+      return Result.fail<T, ValidationError>(new ValidationError(String(error)));
+    }
+  };
+};
+
+// If still needed, add more specialized types and integration functions here
 
 // Move to a dedicated examples file or wrap in comments
 /*
 // Example usage - not for direct execution
-export const userLoader = reactRouterIntegrations.createLoader(async (params: any) => {
+export const userLoader = reactRouterIntegrations.createLoader(async (params: unknown) => {
   try {
     // Example only - fetchUser would be provided by your application
     const user = await fetchUser(params.userId);
@@ -520,12 +449,12 @@ export const userLoader = reactRouterIntegrations.createLoader(async (params: an
 //   }
 // );
 
-// async function fetchUser(userId: string): Promise<any> {
+// async function fetchUser(userId: string): Promise<unknown> {
 //   // Implementation
 //   return { id: userId, name: 'User' };
 // }
 
-// async function createUser(userData: any): Promise<any> {
+// async function createUser(userData: unknown): Promise<unknown> {
 //   // Implementation
 //   return { ...userData, id: 'new-id' };
 // }
