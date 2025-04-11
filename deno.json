@@ -4,11 +4,11 @@
   "license": "MIT",
   "exports": "./mod.ts",
   "tasks": {
-    "test": "deno test --allow-none",
+    "test": "deno test --no-check",
     "check": "deno check mod.ts",
     "lint": "deno lint",
     "fmt": "deno fmt",
-    "coverage": "deno test --allow-none --coverage=cov_profile && deno coverage cov_profile",
+    "coverage": "deno test --coverage=cov_profile --no-check && deno coverage cov_profile",
     "publish": "deno publish --dry-run"
   },
   "fmt": {
