@@ -1,6 +1,7 @@
 # Result Monad for TypeScript
 
-A comprehensive Result type implementation for TypeScript with robust error handling and composition utilities.
+A comprehensive Result type implementation for TypeScript with robust error handling and composition
+utilities.
 
 ## Features
 
@@ -17,13 +18,13 @@ A comprehensive Result type implementation for TypeScript with robust error hand
 ### Deno
 
 ```ts
-import { Result, ok, fail } from "jsr:@kumak/result-monad-ts";
+import { fail, ok, Result } from 'jsr:@kumak/result-monad';
 ```
 
 ## Basic Usage
 
 ```ts
-import { Result } from "@kumak/result-monad-ts";
+import { Result } from '@kumak/result-monad';
 
 // Create a success result
 const success = Result.ok(42);
@@ -31,19 +32,19 @@ console.log(success.isSuccess); // true
 console.log(success.value); // 42
 
 // Create a failure result
-const failure = Result.fail(new Error("Something went wrong"));
+const failure = Result.fail(new Error('Something went wrong'));
 console.log(failure.isFailure); // true
 console.log(failure.error.message); // "Something went wrong"
 
 // Chain operations (only runs if previous operations were successful)
 const result = await Result.fromPromise(fetchData())
-  .map(data => processData(data))
-  .flatMap(processed => validateData(processed));
+  .map((data) => processData(data))
+  .flatMap((processed) => validateData(processed));
 
 // Handle result with pattern matching
 const message = result.match(
-  value => `Successfully processed: ${value}`,
-  error => `Error: ${error.message}`
+  (value) => `Successfully processed: ${value}`,
+  (error) => `Error: ${error.message}`,
 );
 ```
 

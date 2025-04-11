@@ -1,6 +1,7 @@
 # Async Operations with Result
 
-This tutorial covers patterns for working with asynchronous operations using the Result monad, including Promise integration, retries, timeouts, and cancellation.
+This tutorial covers patterns for working with asynchronous operations using the Result monad,
+including Promise integration, retries, timeouts, and cancellation.
 
 ## Converting Between Promises and Results
 
@@ -9,17 +10,17 @@ This tutorial covers patterns for working with asynchronous operations using the
 Use `Result.fromPromise` to convert a Promise to a Result:
 
 ```typescript
-import { Result, TechnicalError } from 'ts-result-monad';
+import { Result, TechnicalError } from '@kumak/result-monad';
 
 async function fetchUserData(userId: string): Promise<Result<User, Error>> {
   return await Result.fromPromise(
     fetch(`/api/users/${userId}`)
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`);
         }
         return response.json();
-      })
+      }),
   );
 }
 
@@ -54,15 +55,17 @@ try {
 Use `asyncMap` when the transformation function returns a Promise:
 
 ```typescript
-async function enrichUserData(userResult: Result<User, Error>): Promise<Result<EnrichedUser, Error>> {
-  return await userResult.asyncMap(async user => {
+async function enrichUserData(
+  userResult: Result<User, Error>,
+): Promise<Result<EnrichedUser, Error>> {
+  return await userResult.asyncMap(async (user) => {
     // Fetch additional data asynchronously
     const ordersResponse = await fetch(`/api/users/${user.id}/orders`);
     const orders = await ordersResponse.json();
 
     return {
       ...user,
-      orders
+      orders,
     };
   });
 }
@@ -76,14 +79,14 @@ Use `asyncFlatMap` when the async operation itself returns a Result:
 async function processUserData(userId: string): Promise<Result<ProcessedData, Error>> {
   const userResult = await fetchUserData(userId);
 
-  return await userResult.asyncFlatMap(async user => {
+  return await userResult.asyncFlatMap(async (user) => {
     // This operation returns a Result
     const validationResult = await validateUserAsync(user);
 
-    return validationResult.map(validUser => ({
+    return validationResult.map((validUser) => ({
       id: validUser.id,
       displayName: `${validUser.firstName} ${validUser.lastName}`,
-      email: validUser.email
+      email: validUser.email,
     }));
   });
 }
@@ -94,7 +97,7 @@ async function processUserData(userId: string): Promise<Result<ProcessedData, Er
 Execute multiple async operations in parallel while maintaining Result semantics:
 
 ```typescript
-import { combineResults } from 'ts-result-monad';
+import { combineResults } from '@kumak/result-monad';
 
 async function fetchDashboardData(userId: string): Promise<Result<Dashboard, Error>> {
   try {
@@ -102,12 +105,12 @@ async function fetchDashboardData(userId: string): Promise<Result<Dashboard, Err
     const [userResult, ordersResult, settingsResult] = await Promise.all([
       fetchUserData(userId),
       fetchUserOrders(userId),
-      fetchUserSettings(userId)
+      fetchUserSettings(userId),
     ]);
 
     // Check if any operation failed
     const results = [userResult, ordersResult, settingsResult];
-    const failedResult = results.find(result => result.isFailure);
+    const failedResult = results.find((result) => result.isFailure);
 
     if (failedResult) {
       return Result.fail(failedResult.error);
@@ -117,11 +120,11 @@ async function fetchDashboardData(userId: string): Promise<Result<Dashboard, Err
     return Result.ok({
       user: userResult.value,
       orders: ordersResult.value,
-      settings: settingsResult.value
+      settings: settingsResult.value,
     });
   } catch (error) {
     return Result.fail(
-      error instanceof Error ? error : new TechnicalError(String(error))
+      error instanceof Error ? error : new TechnicalError(String(error)),
     );
   }
 }
@@ -133,18 +136,18 @@ async function fetchDashboardData2(userId: string): Promise<Result<Dashboard, Er
     const results = await Promise.all([
       fetchUserData(userId),
       fetchUserOrders(userId),
-      fetchUserSettings(userId)
+      fetchUserSettings(userId),
     ]);
 
     // Combine results - if any fail, the combined result will fail
     return combineResults(results).map(([user, orders, settings]) => ({
       user,
       orders,
-      settings
+      settings,
     }));
   } catch (error) {
     return Result.fail(
-      error instanceof Error ? error : new TechnicalError(String(error))
+      error instanceof Error ? error : new TechnicalError(String(error)),
     );
   }
 }
@@ -155,7 +158,7 @@ async function fetchDashboardData2(userId: string): Promise<Result<Dashboard, Er
 Implement retry logic for operations that might experience transient failures:
 
 ```typescript
-import { retry, tryCatchAsync } from 'ts-result-monad';
+import { retry, tryCatchAsync } from '@kumak/result-monad';
 
 async function fetchWithRetry(url: string): Promise<Result<any, Error>> {
   const fetchOperation = async (): Promise<Result<any, Error>> => {
@@ -179,8 +182,8 @@ async function fetchWithRetry(url: string): Promise<Result<any, Error>> {
 
 Implement timeout handling for async operations:
 
-```typescript
-import { Result, TimeoutError } from 'ts-result-monad';
+````typescript
+import { Result, TimeoutError } from '@kumak/result-monad';
 
 async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Result<any, Error>> {
   return await tryCatchAsync(async () => {
@@ -207,7 +210,7 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Result<
 The Result monad supports cancellation through AbortController integration:
 
 ```typescript
-import { Result } from 'ts-result-monad';
+import { Result } from '@kumak/result-monad';
 
 async function fetchUserWithCancellation(userId: string, abortSignal?: AbortSignal): Promise<Result<User, Error>> {
   // Using the built-in AbortSignal support
@@ -241,14 +244,14 @@ async function main() {
     console.error('Error:', result.error.message);
   }
 }
-```
+````
 
 ## Converting Callback-Based APIs
 
 Many JavaScript APIs use callbacks. You can convert these to Result-based APIs:
 
 ```typescript
-import { promisifyWithResult } from 'ts-result-monad';
+import { promisifyWithResult } from '@kumak/result-monad';
 
 // Example Node.js fs.readFile with callbacks
 function readFile(path: string, callback: (error: Error | null, data?: string) => void): void {
@@ -263,8 +266,8 @@ async function readFileWithResult(path: string): Promise<Result<string, Error>> 
 // Usage
 const fileResult = await readFileWithResult('config.json');
 fileResult.match(
-  content => console.log('File content:', content),
-  error => console.error('Error reading file:', error.message)
+  (content) => console.log('File content:', content),
+  (error) => console.error('Error reading file:', error.message),
 );
 ```
 
@@ -275,7 +278,7 @@ Process a list of items sequentially, maintaining the Result context:
 ```typescript
 async function processItemsSequentially<T, U>(
   items: T[],
-  processor: (item: T) => Promise<Result<U, Error>>
+  processor: (item: T) => Promise<Result<U, Error>>,
 ): Promise<Result<U[], Error>> {
   const results: U[] = [];
 
@@ -310,5 +313,6 @@ const processResult = await processItemsSequentially(userIds, fetchUserData);
 ## Next Steps
 
 Now that you understand async patterns with Result, check out these advanced tutorials:
+
 - [Validation with Result](./05-validation.md)
 - [Functional Composition](./06-functional-composition.md)

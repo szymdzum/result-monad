@@ -2,13 +2,16 @@
 
 ## Understanding Monads
 
-A monad is a design pattern used in functional programming that helps manage side effects and computational flow in a more predictable way. While the formal definition can get quite abstract, you can think of a monad as a wrapper around a value (or potential value) that:
+A monad is a design pattern used in functional programming that helps manage side effects and
+computational flow in a more predictable way. While the formal definition can get quite abstract,
+you can think of a monad as a wrapper around a value (or potential value) that:
 
 1. **Encapsulates** a value or computation
 2. Provides ways to **transform** that value
 3. Has rules for **combining** operations in sequence
 
-The Result monad specifically is designed to handle operations that might succeed or fail, providing a structured way to manage these outcomes without resorting to exceptions.
+The Result monad specifically is designed to handle operations that might succeed or fail, providing
+a structured way to manage these outcomes without resorting to exceptions.
 
 ## Why Use Result for Error Handling in JavaScript/TypeScript?
 
@@ -24,7 +27,7 @@ try {
 } catch (error) {
   // What failed? JSON parsing? Processing? Database save?
   // What type of error was it?
-  console.error("Something went wrong:", error);
+  console.error('Something went wrong:', error);
 }
 ```
 
@@ -50,21 +53,21 @@ Here's the same example using the Result monad:
 
 ```typescript
 const result = parseJSON(inputString)
-  .flatMap(data => processData(data))
-  .flatMap(processedData => saveToDatabase(processedData));
+  .flatMap((data) => processData(data))
+  .flatMap((processedData) => saveToDatabase(processedData));
 
 // Pattern matching for clean handling
 result.match(
-  value => console.log("Operation succeeded:", value),
-  error => {
+  (value) => console.log('Operation succeeded:', value),
+  (error) => {
     if (error instanceof ValidationError) {
-      console.error("Validation failed:", error.message);
+      console.error('Validation failed:', error.message);
     } else if (error instanceof DatabaseError) {
-      console.error("Database error:", error.message);
+      console.error('Database error:', error.message);
     } else {
-      console.error("Unknown error:", error.message);
+      console.error('Unknown error:', error.message);
     }
-  }
+  },
 );
 ```
 
@@ -77,7 +80,7 @@ Result provides type safety for both success and error cases. In TypeScript, thi
 ```typescript
 function divide(a: number, b: number): Result<number, Error> {
   if (b === 0) {
-    return Result.fail(new Error("Division by zero"));
+    return Result.fail(new Error('Division by zero'));
   }
   return Result.ok(a / b);
 }
@@ -93,30 +96,33 @@ if (result.isSuccess) {
 
 ### 2. Composition and Chaining
 
-Results can be easily composed and chained, making it easy to build complex operations from simpler ones:
+Results can be easily composed and chained, making it easy to build complex operations from simpler
+ones:
 
 ```typescript
 validateInput(data)
-  .flatMap(validData => processData(validData))
-  .flatMap(processedData => saveData(processedData))
+  .flatMap((validData) => processData(validData))
+  .flatMap((processedData) => saveData(processedData))
   .match(
-    result => sendSuccess(result),
-    error => handleError(error)
+    (result) => sendSuccess(result),
+    (error) => handleError(error),
   );
 ```
 
 ### 3. Railway-Oriented Programming
 
-The Result monad implements what's known as "railway-oriented programming" - where success and failure flow on separate "tracks":
+The Result monad implements what's known as "railway-oriented programming" - where success and
+failure flow on separate "tracks":
 
 ```
-  Success track: ---> [Operation A] ---> [Operation B] ---> [Operation C] ---> Result
-                        |                  |                  |
-                        v                  v                  v
-  Failure track: -------->------------------>----------------->------->
+Success track: ---> [Operation A] ---> [Operation B] ---> [Operation C] ---> Result
+                      |                  |                  |
+                      v                  v                  v
+Failure track: -------->------------------>----------------->------->
 ```
 
-If any operation fails, the computation switches to the failure track and skips remaining operations.
+If any operation fails, the computation switches to the failure track and skips remaining
+operations.
 
 ### 4. Transformation and Recovery
 
@@ -124,13 +130,13 @@ Result provides utilities for transforming values and recovering from errors:
 
 ```typescript
 // Transform success values
-const doubled = result.map(x => x * 2);
+const doubled = result.map((x) => x * 2);
 
 // Transform errors
-const betterError = result.mapError(e => new BetterError(e.message));
+const betterError = result.mapError((e) => new BetterError(e.message));
 
 // Recover from errors
-const recovered = result.recover(error => {
+const recovered = result.recover((error) => {
   if (error instanceof TemporaryError) {
     return Result.ok(defaultValue);
   }
@@ -148,4 +154,5 @@ The Result monad is particularly useful for:
 4. **Business logic with rules** - when operations may violate business rules
 5. **User input processing** - when handling potentially invalid user input
 
-In the following tutorials, we'll explore practical applications of the Result monad for these scenarios and more.
+In the following tutorials, we'll explore practical applications of the Result monad for these
+scenarios and more.

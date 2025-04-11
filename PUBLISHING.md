@@ -1,12 +1,13 @@
 # Publishing to JSR Registry
 
-This document outlines the steps taken to prepare this package for publication to the [JSR Registry](https://jsr.io/).
+This document outlines the steps taken to prepare this package for publication to the
+[JSR Registry](https://jsr.io/).
 
 ## Completed Steps
 
 1. **Package Configuration**
    - Updated `deno.json` with proper JSR metadata:
-     - Package name: `@kumak/result-monad-ts`
+     - Package name: `@kumak/result-monad`
      - Version: `0.1.0`
      - Entry point: `./mod.ts`
    - Added tasks for testing, linting, formatting, and publishing
@@ -47,8 +48,8 @@ This document outlines the steps taken to prepare this package for publication t
    ```
    This will prompt you to login and approve the publication.
 
-4. **GitHub Actions Setup (Optional):**
-   You can set up automated publishing using GitHub Actions. Create a workflow file at `.github/workflows/publish.yml`:
+4. **GitHub Actions Setup (Optional):** You can set up automated publishing using GitHub Actions.
+   Create a workflow file at `.github/workflows/publish.yml`:
 
    ```yaml
    name: Publish
@@ -75,7 +76,8 @@ This document outlines the steps taken to prepare this package for publication t
 
 If you encounter issues during publication:
 
-1. **Slow Types Errors:** Use `--allow-slow-types` flag if you don't want to fix all return type issues
+1. **Slow Types Errors:** Use `--allow-slow-types` flag if you don't want to fix all return type
+   issues
 2. **Import Errors:** Ensure all imports use proper `.ts` extensions
 3. **Module Errors:** Verify your `mod.ts` properly exports all intended functionality
 

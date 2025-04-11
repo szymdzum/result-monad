@@ -49,7 +49,7 @@ export class Validator<T> {
    */
   public property<K extends keyof T>(
     propertyName: K,
-    validationFn: (validator: Validator<T[K]>) => Validator<T[K]>
+    validationFn: (validator: Validator<T[K]>) => Validator<T[K]>,
   ): Validator<T> {
     const propertyValue = this._value[propertyName];
     this._currentPropertyPath.push(String(propertyName));
@@ -58,10 +58,10 @@ export class Validator<T> {
     validationFn(propertyValidator);
 
     this._errors.push(
-      ...propertyValidator._errors.map(error => {
+      ...propertyValidator._errors.map((error) => {
         const path = [...this._currentPropertyPath].join('.');
         return error.replace('{path}', path);
-      })
+      }),
     );
 
     this._currentPropertyPath.pop();
@@ -77,7 +77,7 @@ export class Validator<T> {
    */
   public nested<K extends keyof T>(
     propertyName: K,
-    validationFn: (validator: Validator<T[K]>) => Validator<T[K]>
+    validationFn: (validator: Validator<T[K]>) => Validator<T[K]>,
   ): Validator<T> {
     return this.property(propertyName, validationFn);
   }
@@ -91,7 +91,7 @@ export class Validator<T> {
    */
   public array<ItemType>(
     propertyName: Extract<keyof T, string>,
-    validator: (item: Validator<ItemType>) => Validator<ItemType>
+    validator: (item: Validator<ItemType>) => Validator<ItemType>,
   ): Validator<T> {
     const property = this._value?.[propertyName];
 
@@ -112,9 +112,9 @@ export class Validator<T> {
       const itemValidator = Validator.for(item);
       validator(itemValidator as Validator<ItemType>);
       this._errors.push(
-        ...itemValidator._errors.map(error =>
+        ...itemValidator._errors.map((error) =>
           error.replace('{path}', [...this._currentPropertyPath].join('.'))
-        )
+        ),
       );
       this._currentPropertyPath.pop();
     });
@@ -257,7 +257,7 @@ export class Validator<T> {
   public oneOf(allowedValues: unknown[]): Validator<T> {
     if (!allowedValues.includes(this._value as unknown)) {
       this.addError(
-        this._customErrorMessage || `{path} must be one of: ${allowedValues.join(', ')}`
+        this._customErrorMessage || `{path} must be one of: ${allowedValues.join(', ')}`,
       );
     }
     return this;
@@ -272,7 +272,7 @@ export class Validator<T> {
    */
   public custom(
     predicate: (value: T) => boolean,
-    errorMessage = 'Validation failed for {path}'
+    errorMessage = 'Validation failed for {path}',
   ): Validator<T> {
     if (!predicate(this._value)) {
       this.addError(this._customErrorMessage || errorMessage);
@@ -299,8 +299,9 @@ export class Validator<T> {
    * @param errorMessage - The error message to add
    */
   private addError(errorMessage: string): void {
-    const path =
-      this._currentPropertyPath.length > 0 ? this._currentPropertyPath.join('.') : 'value';
+    const path = this._currentPropertyPath.length > 0
+      ? this._currentPropertyPath.join('.')
+      : 'value';
 
     this._errors.push(errorMessage.replace('{path}', path));
     this._customErrorMessage = undefined;
@@ -346,7 +347,9 @@ export namespace integrations {
    * });
    * ```
    */
-  export const validateBody = <T>(validationFn: (validator: Validator<T>) => Validator<T>): ((req: any, res: any, next: any) => void) => {
+  export const validateBody = <T>(
+    validationFn: (validator: Validator<T>) => Validator<T>,
+  ): (req: any, res: any, next: any) => void => {
     return (req: any, res: any, next: any) => {
       const result = validationFn(Validator.for(req.body)).validate();
 
@@ -381,8 +384,8 @@ export namespace integrations {
    * ```
    */
   export const createHookFormResolver = <T>(
-    validationFn: (validator: Validator<T>) => Validator<T>
-  ): ((data: T) => any) => {
+    validationFn: (validator: Validator<T>) => Validator<T>,
+  ): (data: T) => any => {
     return (data: T) => {
       const result = validationFn(Validator.for(data)).validate();
 
@@ -432,7 +435,7 @@ export namespace integrations {
    * const result = validateUser(userData);
    * ```
    */
-  export const fromZod = <T>(schema: any): ((data: T) => Result<T, ValidationError>) => {
+  export const fromZod = <T>(schema: any): (data: T) => Result<T, ValidationError> => {
     return (data: T) => {
       try {
         schema.parse(data);
@@ -441,7 +444,7 @@ export namespace integrations {
         // Zod provides validation errors in a structured format
         if (error.errors) {
           const errorMessages = error.errors.map(
-            (err: any) => `${err.path.join('.')}: ${err.message}`
+            (err: any) => `${err.path.join('.')}: ${err.message}`,
           );
           return Result.fail<T, ValidationError>(new ValidationError(errorMessages.join(', ')));
         }
@@ -467,7 +470,7 @@ export namespace integrations {
    * const result = validateUser(userData);
    * ```
    */
-  export const fromYup = <T>(schema: any): ((data: T) => Result<T, ValidationError>) => {
+  export const fromYup = <T>(schema: any): (data: T) => Result<T, ValidationError> => {
     return (data: T) => {
       try {
         schema.validateSync(data, { abortEarly: false });
@@ -475,7 +478,7 @@ export namespace integrations {
       } catch (error) {
         if (error.inner) {
           const errorMessages = error.inner.map(
-            (err: any) => `${err.path}: ${err.message}`
+            (err: any) => `${err.path}: ${err.message}`,
           );
           return Result.fail<T, ValidationError>(new ValidationError(errorMessages.join(', ')));
         }

@@ -1,6 +1,7 @@
 # Basic Usage of the Result Monad
 
-This tutorial covers the fundamental operations of the Result monad, showing how to create, transform, and handle both success and failure cases.
+This tutorial covers the fundamental operations of the Result monad, showing how to create,
+transform, and handle both success and failure cases.
 
 ## Creating Results
 
@@ -9,7 +10,7 @@ There are several ways to create a Result object:
 ### Success and Failure Cases
 
 ```typescript
-import { Result } from 'ts-result-monad';
+import { Result } from '@kumak/result-monad';
 
 // Create a success result
 const success = Result.ok<number, Error>(42);
@@ -23,7 +24,7 @@ const failure = Result.fail<string, Error>(new Error('Something went wrong'));
 Instead of using try/catch blocks, you can convert functions that might throw using `fromThrowable`:
 
 ```typescript
-function parseJSON(json: string): Result<any, Error> {
+function parseJSON(json: string): Result<unknown, Error> {
   return Result.fromThrowable(() => JSON.parse(json));
 }
 
@@ -39,12 +40,12 @@ Convert Promise-based APIs to Result-returning functions:
 ```typescript
 async function fetchUser(id: string): Promise<Result<User, Error>> {
   return await Result.fromPromise(
-    fetch(`/api/users/${id}`).then(response => {
+    fetch(`/api/users/${id}`).then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
       return response.json();
-    })
+    }),
   );
 }
 ```
@@ -76,7 +77,7 @@ Use `map` to transform the success value while preserving the Result wrapper:
 
 ```typescript
 const doubled = Result.ok<number, Error>(21)
-  .map(x => x * 2);
+  .map((x) => x * 2);
 
 console.log(doubled.value); // 42
 ```
@@ -87,7 +88,7 @@ Use `mapError` to transform the error value:
 
 ```typescript
 const betterError = Result.fail<number, Error>(new Error('Database error'))
-  .mapError(e => new DatabaseError(e.message));
+  .mapError((e) => new DatabaseError(e.message));
 ```
 
 ### Chaining Operations with flatMap
@@ -102,7 +103,7 @@ function validateUser(input: any): Result<User, Error> {
   return Result.ok({
     id: input.id,
     name: input.name,
-    email: input.email
+    email: input.email,
   });
 }
 
@@ -116,8 +117,8 @@ function saveUser(user: User): Result<string, Error> {
 
 // Chain operations that might fail
 const saveResult = parseJSON('{"id": 123, "name": "John", "email": "john@example.com"}')
-  .flatMap(data => validateUser(data))
-  .flatMap(user => saveUser(user));
+  .flatMap((data) => validateUser(data))
+  .flatMap((user) => saveUser(user));
 ```
 
 ## Side Effects with tap and tapError
@@ -126,11 +127,11 @@ Perform side effects without breaking the chain:
 
 ```typescript
 const result = fetchUser('123')
-  .tap(user => {
+  .tap((user) => {
     console.log(`User loaded: ${user.name}`);
     trackAnalytics('user_loaded', { userId: user.id });
   })
-  .tapError(error => {
+  .tapError((error) => {
     console.error(`Failed to load user: ${error.message}`);
     reportError(error);
   });
@@ -142,8 +143,8 @@ Use `match` to handle both success and failure cases in one operation:
 
 ```typescript
 const message = result.match(
-  user => `Welcome back, ${user.name}!`,
-  error => `Unable to load user: ${error.message}`
+  (user) => `Welcome back, ${user.name}!`,
+  (error) => `Unable to load user: ${error.message}`,
 );
 ```
 
@@ -156,7 +157,7 @@ Provide fallbacks for failure cases:
 const user = userResult.getOrElse({ id: 0, name: 'Guest', email: '' });
 
 // Or compute a value based on the error
-const userMessage = userResult.getOrCall(error => {
+const userMessage = userResult.getOrCall((error) => {
   if (error instanceof NotFoundError) {
     return { id: 0, name: 'Guest', email: '' };
   }
@@ -170,7 +171,7 @@ Try to recover from specific errors:
 
 ```typescript
 const result = fetchUser('123')
-  .recover(error => {
+  .recover((error) => {
     if (error instanceof NotFoundError) {
       // Try to fetch a default user instead
       return fetchUser('default');
@@ -185,12 +186,12 @@ const result = fetchUser('123')
 Combine multiple Result objects:
 
 ```typescript
-import { combineResults } from 'ts-result-monad';
+import { combineResults } from '@kumak/result-monad';
 
 const results = await Promise.all([
   fetchUser('123'),
   fetchUser('456'),
-  fetchUser('789')
+  fetchUser('789'),
 ]);
 
 const combinedResult = combineResults(results);
@@ -209,7 +210,7 @@ Convert between Results and Promises:
 ```typescript
 // Convert Result to Promise
 const promise = Result.ok<number, Error>(42).toPromise();
-promise.then(value => console.log(value)); // 42
+promise.then((value) => console.log(value)); // 42
 
 // Convert Promise to Result
 const result = await Result.fromPromise(promise);
@@ -218,6 +219,7 @@ const result = await Result.fromPromise(promise);
 ## Next Steps
 
 Now that you understand the basic operations, check out these advanced tutorials:
+
 - [Error Handling with Specialized Errors](./03-error-handling.md)
 - [Async Operations with Result](./04-async-patterns.md)
 - [Validation with Result](./05-validation.md)

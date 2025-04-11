@@ -30,7 +30,7 @@ export async function tryCatchAsync<T>(fn: () => Promise<T>): Promise<Result<T, 
     return Result.ok<T, Error>(result);
   } catch (error) {
     return Result.fail<T, Error>(
-      error instanceof Error ? error : new TechnicalError(String(error))
+      error instanceof Error ? error : new TechnicalError(String(error)),
     );
   }
 }
@@ -45,14 +45,14 @@ export function promisifyWithResult<T>(
   fn: (...args: any[]) => void,
   ...args: any[]
 ): Promise<Result<T, Error>> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     try {
       fn(...args, (error: any, result: T) => {
         if (error) {
           resolve(
             Result.fail<T, Error>(
-              error instanceof Error ? error : new TechnicalError(String(error))
-            )
+              error instanceof Error ? error : new TechnicalError(String(error)),
+            ),
           );
         } else {
           resolve(Result.ok<T, Error>(result));
@@ -60,7 +60,7 @@ export function promisifyWithResult<T>(
       });
     } catch (error) {
       resolve(
-        Result.fail<T, Error>(error instanceof Error ? error : new TechnicalError(String(error)))
+        Result.fail<T, Error>(error instanceof Error ? error : new TechnicalError(String(error))),
       );
     }
   });
@@ -76,7 +76,7 @@ export function promisifyWithResult<T>(
 export function fromPredicate<T>(
   value: T,
   predicate: (value: T) => boolean,
-  errorMessage: string
+  errorMessage: string,
 ): Result<T, Error> {
   return predicate(value)
     ? Result.ok<T, Error>(value)
@@ -91,7 +91,7 @@ export function fromPredicate<T>(
  */
 export function mapResult<T, U, E extends Error>(
   result: Result<T, E>,
-  mapper: (value: T) => U
+  mapper: (value: T) => U,
 ): Result<U, E> {
   return result.map(mapper);
 }
@@ -104,7 +104,7 @@ export function mapResult<T, U, E extends Error>(
  */
 export function withFallback<T, E extends Error>(
   result: Result<T, E>,
-  fallbackValue: T
+  fallbackValue: T,
 ): Result<T, E> {
   return result.isSuccess ? result : Result.ok<T, E>(fallbackValue);
 }
@@ -117,7 +117,7 @@ export function withFallback<T, E extends Error>(
  */
 export async function retry<T>(
   fn: () => Promise<Result<T, Error>>,
-  options: { maxAttempts?: number; delayMs?: number } = {}
+  options: { maxAttempts?: number; delayMs?: number } = {},
 ): Promise<Result<T, Error>> {
   const maxAttempts = options.maxAttempts ?? 3;
   let currentDelay = options.delayMs ?? 300;
@@ -135,7 +135,7 @@ export async function retry<T>(
     }
 
     if (attempt < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, currentDelay));
+      await new Promise((resolve) => setTimeout(resolve, currentDelay));
       // Exponential backoff
       const nextDelay = currentDelay * 2;
       currentDelay = nextDelay;
@@ -143,6 +143,6 @@ export async function retry<T>(
   }
 
   return Result.fail<T, Error>(
-    lastError || new TechnicalError(`Failed after ${maxAttempts} attempts`)
+    lastError || new TechnicalError(`Failed after ${maxAttempts} attempts`),
   );
 }

@@ -1,5 +1,5 @@
 /**
- * Main entry point for the result-monad-ts package.
+ * Main entry point for the result-monad package.
  * Thanks for trust may your code be clean and your results be successful!
  *
  * @packageDocumentation
@@ -20,40 +20,35 @@
  * - Transpilation may be required for older browsers
  */
 
-
 // Export the Result class
 export { Result } from './src/result.ts';
 
 // Export all error types
 export {
-  ResultError,
-  ValidationError,
-  NotFoundError,
-  UnauthorizedError,
   BusinessRuleError,
+  CancellationError,
+  ConcurrencyError,
+  NotFoundError,
+  ResultError,
   TechnicalError,
   TimeoutError,
-  ConcurrencyError,
-  CancellationError,
+  UnauthorizedError,
+  ValidationError,
 } from './src/errors.ts';
 
 // Export all utility functions
 export {
   combineResults,
-  tryCatchAsync,
-  promisifyWithResult,
   fromPredicate,
   mapResult,
-  withFallback,
+  promisifyWithResult,
   retry,
+  tryCatchAsync,
+  withFallback,
 } from './src/utils.ts';
 
 // Export validation utilities
-export {
-  Validator,
-  validate,
-  integrations as validationIntegrations,
-} from './src/validation.ts';
+export { integrations as validationIntegrations, validate, Validator } from './src/validation.ts';
 
 // Export individual functions from Result (for tree-shaking optimization)
 import { Result as ResultClass } from './src/result.ts';

@@ -50,7 +50,7 @@ export class Result<T, E extends Error> {
       false,
       new CancellationError('Operation was cancelled', operationId) as unknown as E,
       undefined,
-      true
+      true,
     );
   }
 
@@ -189,7 +189,7 @@ export class Result<T, E extends Error> {
    */
   public async asyncMap<U>(
     f: (value: T) => Promise<U>,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
   ): Promise<Result<U, E>> {
     if (this.isFailure) {
       return Result.fail<U, E>(this._error as E);
@@ -213,7 +213,7 @@ export class Result<T, E extends Error> {
             () => {
               reject(new Error('Operation aborted'));
             },
-            { once: true }
+            { once: true },
           );
         });
 
@@ -226,7 +226,7 @@ export class Result<T, E extends Error> {
             return Result.cancelled<U, E>('Operation was aborted');
           }
           return Result.fail<U, E>(
-            error instanceof Error ? (error as E) : (new Error(String(error)) as E)
+            error instanceof Error ? (error as E) : (new Error(String(error)) as E),
           );
         }
       }
@@ -236,7 +236,7 @@ export class Result<T, E extends Error> {
       return Result.ok<U, E>(mappedValue);
     } catch (error) {
       return Result.fail<U, E>(
-        error instanceof Error ? (error as E) : (new Error(String(error)) as E)
+        error instanceof Error ? (error as E) : (new Error(String(error)) as E),
       );
     }
   }
@@ -250,7 +250,7 @@ export class Result<T, E extends Error> {
    */
   public async asyncFlatMap<U>(
     f: (value: T) => Promise<Result<U, E>>,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
   ): Promise<Result<U, E>> {
     if (this.isFailure) {
       return Result.fail<U, E>(this._error as E);
@@ -274,7 +274,7 @@ export class Result<T, E extends Error> {
             () => {
               reject(new Error('Operation aborted'));
             },
-            { once: true }
+            { once: true },
           );
         });
 
@@ -286,7 +286,7 @@ export class Result<T, E extends Error> {
             return Result.cancelled<U, E>('Operation was aborted');
           }
           return Result.fail<U, E>(
-            error instanceof Error ? (error as E) : (new Error(String(error)) as E)
+            error instanceof Error ? (error as E) : (new Error(String(error)) as E),
           );
         }
       }
@@ -295,7 +295,7 @@ export class Result<T, E extends Error> {
       return await resultPromise;
     } catch (error) {
       return Result.fail<U, E>(
-        error instanceof Error ? (error as E) : (new Error(String(error)) as E)
+        error instanceof Error ? (error as E) : (new Error(String(error)) as E),
       );
     }
   }
@@ -337,7 +337,7 @@ export class Result<T, E extends Error> {
    */
   public static async fromPromise<U>(
     promise: Promise<U>,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
   ): Promise<Result<U, Error>> {
     try {
       // If already aborted, return a cancelled result
@@ -354,7 +354,7 @@ export class Result<T, E extends Error> {
             () => {
               reject(new Error('Operation aborted'));
             },
-            { once: true }
+            { once: true },
           );
         });
 

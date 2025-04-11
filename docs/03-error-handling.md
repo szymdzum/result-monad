@@ -1,6 +1,7 @@
 # Error Handling with Specialized Errors
 
-This tutorial explains how to use the specialized error types provided by the Result monad library to create more expressive and domain-specific error handling.
+This tutorial explains how to use the specialized error types provided by the Result monad library
+to create more expressive and domain-specific error handling.
 
 ## The Error Hierarchy
 
@@ -18,7 +19,8 @@ ResultError (base class)
 └── ConcurrencyError
 ```
 
-Using specialized errors makes your code more expressive and helps consumers of your API understand what went wrong.
+Using specialized errors makes your code more expressive and helps consumers of your API understand
+what went wrong.
 
 ## Using Specialized Errors
 
@@ -27,7 +29,7 @@ Using specialized errors makes your code more expressive and helps consumers of 
 Use `ValidationError` when input data fails validation:
 
 ```typescript
-import { Result, ValidationError } from 'ts-result-monad';
+import { Result, ValidationError } from '@kumak/result-monad';
 
 function validateAge(age: unknown): Result<number, ValidationError> {
   if (typeof age !== 'number') {
@@ -118,7 +120,11 @@ async function connectToDatabase(): Promise<Result<DbConnection, Error>> {
 Use `ConcurrencyError` for optimistic concurrency issues:
 
 ```typescript
-async function updateDocument(id: string, data: any, version: number): Promise<Result<Document, Error>> {
+async function updateDocument(
+  id: string,
+  data: any,
+  version: number,
+): Promise<Result<Document, Error>> {
   try {
     const result = await documentRepo.update(id, data, { version });
     return Result.ok(result);
@@ -138,19 +144,22 @@ When errors occur deep in a call stack, you can preserve the error chain for bet
 ```typescript
 function processOrder(orderId: string): Result<Order, Error> {
   return findOrder(orderId)
-    .flatMap(order => {
+    .flatMap((order) => {
       try {
         return validateOrder(order);
       } catch (error) {
         // Wrap the original error and preserve the chain
         return Result.fail(
-          new BusinessRuleError('Order validation failed', error instanceof Error ? error : undefined)
+          new BusinessRuleError(
+            'Order validation failed',
+            error instanceof Error ? error : undefined,
+          ),
         );
       }
     })
-    .flatMap(validOrder => {
+    .flatMap((validOrder) => {
       return processPayment(validOrder.payment)
-        .mapError(error => new BusinessRuleError('Payment processing failed', error));
+        .mapError((error) => new BusinessRuleError('Payment processing failed', error));
     });
 }
 ```
@@ -172,33 +181,26 @@ function handleOperationResult<T>(result: Result<T, Error>): void {
   if (error instanceof ValidationError) {
     console.error('Validation error:', error.message);
     showValidationErrorToUser(error.message);
-  }
-  else if (error instanceof NotFoundError) {
+  } else if (error instanceof NotFoundError) {
     console.error('Not found:', error.message);
     showNotFoundPage();
-  }
-  else if (error instanceof UnauthorizedError) {
+  } else if (error instanceof UnauthorizedError) {
     console.error('Authorization error:', error.message);
     redirectToLogin();
-  }
-  else if (error instanceof BusinessRuleError) {
+  } else if (error instanceof BusinessRuleError) {
     console.error('Business rule violation:', error.message);
     showFriendlyErrorMessage(error.message);
-  }
-  else if (error instanceof TimeoutError) {
+  } else if (error instanceof TimeoutError) {
     console.error('Operation timed out:', error.message);
     suggestRetry();
-  }
-  else if (error instanceof ConcurrencyError) {
+  } else if (error instanceof ConcurrencyError) {
     console.error('Concurrency error:', error.message);
     suggestRefresh();
-  }
-  else if (error instanceof TechnicalError) {
+  } else if (error instanceof TechnicalError) {
     console.error('Technical error:', error.message);
     logForSupportTeam(error);
     showGenericError();
-  }
-  else {
+  } else {
     console.error('Unknown error:', error);
     showGenericError();
   }
@@ -228,7 +230,7 @@ function logErrorChain(error: Error): void {
 You can extend the error hierarchy with your own domain-specific errors:
 
 ```typescript
-import { ResultError } from 'ts-result-monad';
+import { ResultError } from '@kumak/result-monad';
 
 export class PaymentProcessorError extends ResultError {
   constructor(message: string, cause?: Error) {
@@ -264,6 +266,7 @@ export class InsufficientFundsError extends PaymentProcessorError {
 ## Next Steps
 
 Now that you understand error handling, check out these advanced tutorials:
+
 - [Async Operations with Result](./04-async-patterns.md)
 - [Validation with Result](./05-validation.md)
 - [Functional Composition](./06-functional-composition.md)
