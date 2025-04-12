@@ -48,10 +48,11 @@ jobs:
           git tag -a v${{ steps.get_version.outputs.VERSION }} -m "Release v${{ steps.get_version.outputs.VERSION }}"
           git push origin v${{ steps.get_version.outputs.VERSION }}
       # Note: You need to add a JSR_TOKEN secret to your repository settings
-      # To generate a token:
-      # 1. Visit https://jsr.io/token
-      # 2. Create a new token with publish permissions for @szymdzum scope
-      # 3. Add the token as a repository secret named JSR_TOKEN
+      # For GitHub Actions, you don't need a manually created token
+      # JSR supports GitHub Actions OIDC tokens for authentication
+      # Your workflow already has the necessary permissions:
+      #   permissions:
+      #     id-token: write
       - name: Publish to JSR
         if: success()
-        run: deno publish --token ${{ secrets.JSR_TOKEN }}
+        run: deno publish
