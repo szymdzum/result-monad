@@ -10,7 +10,7 @@ There are several ways to create a Result object:
 ### Success and Failure Cases
 
 ```typescript
-import { Result } from '@kumak/result-monad';
+import { Result } from '@szymdzum/result-monad';
 
 // Create a success result
 const success = Result.ok<number, Error>(42);
@@ -186,7 +186,7 @@ const result = fetchUser('123')
 Combine multiple Result objects:
 
 ```typescript
-import { combineResults } from '@kumak/result-monad';
+import { combineResults } from '@szymdzum/result-monad';
 
 const results = await Promise.all([
   fetchUser('123'),

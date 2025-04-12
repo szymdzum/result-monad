@@ -221,12 +221,14 @@ export class Result<T, E extends Error> {
         try {
           const value = await Promise.race([resultPromise, abortPromise]);
           return Result.ok<U, E>(value);
-        } catch (error) {
+        } catch (error: unknown) {
           if (abortSignal.aborted) {
             return Result.cancelled<U, E>('Operation was aborted');
           }
           return Result.fail<U, E>(
-            error instanceof Error ? (error as E) : (new Error(String(error)) as E),
+            error instanceof Error
+              ? (error as E)
+              : (new Error(typeof error === 'string' ? error : String(error)) as E),
           );
         }
       }
@@ -234,9 +236,11 @@ export class Result<T, E extends Error> {
       // If no signal is provided, just await the result
       const mappedValue = await resultPromise;
       return Result.ok<U, E>(mappedValue);
-    } catch (error) {
+    } catch (error: unknown) {
       return Result.fail<U, E>(
-        error instanceof Error ? (error as E) : (new Error(String(error)) as E),
+        error instanceof Error
+          ? (error as E)
+          : (new Error(typeof error === 'string' ? error : String(error)) as E),
       );
     }
   }
@@ -281,21 +285,25 @@ export class Result<T, E extends Error> {
         // Race the result promise against the abort promise
         try {
           return await Promise.race([resultPromise, abortPromise]);
-        } catch (error) {
+        } catch (error: unknown) {
           if (abortSignal.aborted) {
             return Result.cancelled<U, E>('Operation was aborted');
           }
           return Result.fail<U, E>(
-            error instanceof Error ? (error as E) : (new Error(String(error)) as E),
+            error instanceof Error
+              ? (error as E)
+              : (new Error(typeof error === 'string' ? error : String(error)) as E),
           );
         }
       }
 
       // If no signal is provided, just await the result
       return await resultPromise;
-    } catch (error) {
+    } catch (error: unknown) {
       return Result.fail<U, E>(
-        error instanceof Error ? (error as E) : (new Error(String(error)) as E),
+        error instanceof Error
+          ? (error as E)
+          : (new Error(typeof error === 'string' ? error : String(error)) as E),
       );
     }
   }
@@ -362,19 +370,27 @@ export class Result<T, E extends Error> {
         try {
           const result = await Promise.race([promise, abortPromise]);
           return Result.ok<U, Error>(result);
-        } catch (error) {
+        } catch (error: unknown) {
           if (abortSignal.aborted) {
             return Result.cancelled<U, Error>('Operation was aborted');
           }
-          return Result.fail<U, Error>(error instanceof Error ? error : new Error(String(error)));
+          return Result.fail<U, Error>(
+            error instanceof Error
+              ? error
+              : new Error(typeof error === 'string' ? error : String(error)),
+          );
         }
       }
 
       // No abort signal, just handle the promise normally
       const value = await promise;
       return Result.ok<U, Error>(value);
-    } catch (error) {
-      return Result.fail<U, Error>(error instanceof Error ? error : new Error(String(error)));
+    } catch (error: unknown) {
+      return Result.fail<U, Error>(
+        error instanceof Error
+          ? error
+          : new Error(typeof error === 'string' ? error : String(error)),
+      );
     }
   }
 
@@ -384,8 +400,12 @@ export class Result<T, E extends Error> {
   public static fromThrowable<U>(f: () => U): Result<U, Error> {
     try {
       return Result.ok<U, Error>(f());
-    } catch (error) {
-      return Result.fail<U, Error>(error instanceof Error ? error : new Error(String(error)));
+    } catch (error: unknown) {
+      return Result.fail<U, Error>(
+        error instanceof Error
+          ? error
+          : new Error(typeof error === 'string' ? error : String(error)),
+      );
     }
   }
 }

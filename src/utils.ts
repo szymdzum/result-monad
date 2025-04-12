@@ -1,12 +1,14 @@
-import { TechnicalError } from './errors.ts';
 import { Result } from './result.ts';
+import { TechnicalError } from './errors.ts';
 
 /**
  * Combines multiple result values into a single result containing an array of values
  * @param results Array of Results to combine
  * @returns A Result containing either an array of all success values or the first error
  */
-export function combineResults<T, E extends Error>(results: Result<T, E>[]): Result<T[], E> {
+export function combineResults<T, E extends Error>(
+  results: Result<T, E>[],
+): Result<T[], E> {
   const values: T[] = [];
 
   for (const result of results) {

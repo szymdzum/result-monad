@@ -16,6 +16,35 @@
     "error-handling",
     "deno"
   ],
+  "jsr": {
+    "docs": {
+      "custom": {
+        "introduction": "./docs/01-what-is-a-monad.md",
+        "pages": [
+          {
+            "title": "Basic Usage",
+            "path": "./docs/02-basic-usage.md"
+          },
+          {
+            "title": "Error Handling",
+            "path": "./docs/03-error-handling.md"
+          },
+          {
+            "title": "Async Patterns",
+            "path": "./docs/04-async-patterns.md"
+          },
+          {
+            "title": "Validation",
+            "path": "./docs/05-validation.md"
+          },
+          {
+            "title": "Functional Composition",
+            "path": "./docs/06-functional-composition.md"
+          }
+        ]
+      }
+    }
+  },
   "tasks": {
     "test": "deno test --no-check",
     "check": "deno check mod.ts",
@@ -69,7 +98,7 @@
     ]
   },
   "imports": {
-    "jsr:@std/assert": "jsr:@std/assert@^0.221.0"
+    "jsr:@std/assert": "jsr:@std/assert@^1.0.12"
   },
   "npmRegistry": {
     "provenance": true

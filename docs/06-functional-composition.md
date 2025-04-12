@@ -23,7 +23,7 @@ operations.
 Build data transformation pipelines that handle errors at each step:
 
 ```typescript
-import { Result } from '@kumak/result-monad';
+import { Result } from '@szymdzum/result-monad';
 
 // Step 1: Parse raw data
 function parseInput(input: string): Result<any, Error> {
@@ -325,7 +325,7 @@ const processPayment = (amount: number): Result<string, Error> => {
 Combine Result with predicates for declarative validation:
 
 ```typescript
-import { fromPredicate } from '@kumak/result-monad';
+import { fromPredicate } from '@szymdzum/result-monad';
 
 // Create a Result based on a condition
 const isPositive = (n: number): Result<number, Error> =>
@@ -370,4 +370,5 @@ tutorials for deeper understanding:
 - [Async Patterns](./04-async-patterns.md)
 - [Validation](./05-validation.md)
 
-Check out the [examples directory](../examples/) for complete working examples of these patterns.
+For more advanced usage patterns and real-world applications, refer to the source code and
+documentation.

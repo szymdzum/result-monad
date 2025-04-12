@@ -7,8 +7,8 @@ This document outlines the steps taken to prepare this package for publication t
 
 1. **Package Configuration**
    - Updated `deno.json` with proper JSR metadata:
-     - Package name: `@kumak/result-monad`
-     - Version: `0.1.0`
+     - Package name: `@szymdzum/result-monad`
+     - Version: `0.1.1`
      - Entry point: `./mod.ts`
    - Added tasks for testing, linting, formatting, and publishing
    - Added publication configuration to control included files

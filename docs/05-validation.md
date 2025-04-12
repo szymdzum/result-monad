@@ -14,7 +14,7 @@ containing either the valid data or validation errors.
 Start by importing the validation utilities:
 
 ```typescript
-import { validate, ValidationError } from '@kumak/result-monad';
+import { validate, ValidationError } from '@szymdzum/result-monad';
 ```
 
 Define validation rules for an object:
@@ -195,7 +195,7 @@ function validatePassword(password: string) {
 Use the validation API with Express.js middleware:
 
 ```typescript
-import { validationIntegrations } from '@kumak/result-monad';
+import { validationIntegrations } from '@szymdzum/result-monad';
 import express from 'express';
 
 const app = express();
@@ -223,7 +223,7 @@ app.post('/api/users', validateUserMiddleware, (req, res) => {
 Use the validation API with React Hook Form:
 
 ```typescript
-import { validationIntegrations } from '@kumak/result-monad';
+import { validationIntegrations } from '@szymdzum/result-monad';
 import { useForm } from 'react-hook-form';
 
 // In your React component

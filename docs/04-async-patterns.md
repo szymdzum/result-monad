@@ -10,7 +10,7 @@ including Promise integration, retries, timeouts, and cancellation.
 Use `Result.fromPromise` to convert a Promise to a Result:
 
 ```typescript
-import { Result, TechnicalError } from '@kumak/result-monad';
+import { Result, TechnicalError } from '@szymdzum/result-monad';
 
 async function fetchUserData(userId: string): Promise<Result<User, Error>> {
   return await Result.fromPromise(
@@ -97,7 +97,7 @@ async function processUserData(userId: string): Promise<Result<ProcessedData, Er
 Execute multiple async operations in parallel while maintaining Result semantics:
 
 ```typescript
-import { combineResults } from '@kumak/result-monad';
+import { combineResults } from '@szymdzum/result-monad';
 
 async function fetchDashboardData(userId: string): Promise<Result<Dashboard, Error>> {
   try {
@@ -158,7 +158,7 @@ async function fetchDashboardData2(userId: string): Promise<Result<Dashboard, Er
 Implement retry logic for operations that might experience transient failures:
 
 ```typescript
-import { retry, tryCatchAsync } from '@kumak/result-monad';
+import { retry, tryCatchAsync } from '@szymdzum/result-monad';
 
 async function fetchWithRetry(url: string): Promise<Result<any, Error>> {
   const fetchOperation = async (): Promise<Result<any, Error>> => {
@@ -182,8 +182,8 @@ async function fetchWithRetry(url: string): Promise<Result<any, Error>> {
 
 Implement timeout handling for async operations:
 
-````typescript
-import { Result, TimeoutError } from '@kumak/result-monad';
+```typescript
+import { Result, TimeoutError } from '@szymdzum/result-monad';
 
 async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Result<any, Error>> {
   return await tryCatchAsync(async () => {
@@ -193,7 +193,7 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Result<
     });
 
     // Create the actual fetch promise
-    const fetchPromise = fetch(url).then(response => {
+    const fetchPromise = fetch(url).then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
@@ -204,25 +204,29 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Result<
     return await Promise.race([fetchPromise, timeoutPromise]);
   });
 }
+```
 
 ## Cancellation
 
 The Result monad supports cancellation through AbortController integration:
 
 ```typescript
-import { Result } from '@kumak/result-monad';
+import { Result } from '@szymdzum/result-monad';
 
-async function fetchUserWithCancellation(userId: string, abortSignal?: AbortSignal): Promise<Result<User, Error>> {
+async function fetchUserWithCancellation(
+  userId: string,
+  abortSignal?: AbortSignal,
+): Promise<Result<User, Error>> {
   // Using the built-in AbortSignal support
   return await Result.fromPromise(
     fetch(`/api/users/${userId}`, { signal: abortSignal })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`);
         }
         return response.json();
       }),
-    abortSignal
+    abortSignal,
   );
 }
 
@@ -244,14 +248,14 @@ async function main() {
     console.error('Error:', result.error.message);
   }
 }
-````
+```
 
 ## Converting Callback-Based APIs
 
 Many JavaScript APIs use callbacks. You can convert these to Result-based APIs:
 
 ```typescript
-import { promisifyWithResult } from '@kumak/result-monad';
+import { promisifyWithResult } from '@szymdzum/result-monad';
 
 // Example Node.js fs.readFile with callbacks
 function readFile(path: string, callback: (error: Error | null, data?: string) => void): void {

@@ -4,7 +4,7 @@ A comprehensive Result type implementation for TypeScript with robust error hand
 utilities.
 
 [![JSR Version](https://jsr.io/badges/@szymdzum/result-monad)](https://jsr.io/@szymdzum/result-monad)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/szymdzum/result-monad/deno.yml?branch=main)](https://github.com/szymdzum/result-monad/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/szymdzum/result-monad/publish.yml?branch=main)](https://github.com/szymdzum/result-monad/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -26,7 +26,7 @@ utilities.
 import { fail, ok, Result } from 'jsr:@szymdzum/result-monad';
 
 // Or import specific version
-import { fail, ok, Result } from 'jsr:@szymdzum/result-monad@0.1.0';
+import { fail, ok, Result } from 'jsr:@szymdzum/result-monad@0.1.1';
 ```
 
 ### Node.js
@@ -77,6 +77,7 @@ const message = result.match(
 
 Full documentation is available in the `docs` folder:
 
+- [What is a Monad?](./docs/01-what-is-a-monad.md)
 - [Basic Usage](./docs/02-basic-usage.md)
 - [Error Handling](./docs/03-error-handling.md)
 - [Async Patterns](./docs/04-async-patterns.md)

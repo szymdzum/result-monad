@@ -29,7 +29,7 @@ what went wrong.
 Use `ValidationError` when input data fails validation:
 
 ```typescript
-import { Result, ValidationError } from '@kumak/result-monad';
+import { Result, ValidationError } from '@szymdzum/result-monad';
 
 function validateAge(age: unknown): Result<number, ValidationError> {
   if (typeof age !== 'number') {
@@ -230,7 +230,7 @@ function logErrorChain(error: Error): void {
 You can extend the error hierarchy with your own domain-specific errors:
 
 ```typescript
-import { ResultError } from '@kumak/result-monad';
+import { ResultError } from '@szymdzum/result-monad';
 
 export class PaymentProcessorError extends ResultError {
   constructor(message: string, cause?: Error) {
