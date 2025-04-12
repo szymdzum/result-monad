@@ -26,7 +26,7 @@ utilities.
 import { fail, ok, Result } from 'jsr:@szymdzum/result-monad';
 
 // Or import specific version
-import { fail, ok, Result } from 'jsr:@szymdzum/result-monad@0.1.1';
+import { fail, ok, Result } from 'jsr:@szymdzum/result-monad@0.1.2';
 ```
 
 ### Node.js

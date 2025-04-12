@@ -50,4 +50,4 @@ jobs:
 
       - name: Publish to JSR
         if: success()
-        run: deno publish
+        run: deno publish --verbose
