@@ -1,21 +1,12 @@
 # Result Monad for TypeScript
 
-A comprehensive Result type implementation for TypeScript with robust error handling and composition
-utilities.
+The Result pattern is a way of saying: "Hey, things might go wrong—and that's okay." Success and
+failure both deserve attention, and using Result means we're choosing to deal with uncertainty up
+front, not pretend it doesn't exist.
 
 [![JSR Version](https://jsr.io/badges/@szymdzum/result-monad)](https://jsr.io/@szymdzum/result-monad)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/szymdzum/result-monad/publish.yml?branch=main)](https://github.com/szymdzum/result-monad/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
-## Features
-
-- 🚀 Full TypeScript support with proper type inference
-- ⚡ Lightweight and optimized for performance
-- 🔄 Functional programming style with map/flatMap/filter operations
-- 🛡️ Custom error types with detailed context information
-- 🧩 Utility functions for common tasks and patterns
-- 🔍 Powerful validation integration
-- 📦 Works with both Deno and Node.js
 
 ## Installation
 
@@ -49,17 +40,21 @@ import { fail, ok, Result } from '@szymdzum/result-monad';
 ## Basic Usage
 
 ```ts
-import { Result } from '@szymdzum/result-monad';
+import { fail, ok, Result } from '@szymdzum/result-monad';
 
 // Create a success result
-const success = Result.ok(42);
+const success = ok(42);
 console.log(success.isSuccess); // true
 console.log(success.value); // 42
 
 // Create a failure result
-const failure = Result.fail(new Error('Something went wrong'));
+const failure = fail(new Error('Something went wrong'));
 console.log(failure.isFailure); // true
 console.log(failure.error.message); // "Something went wrong"
+
+// Or use the Result class directly
+const anotherSuccess = Result.ok('hello');
+const anotherFailure = Result.fail(new Error('Another error'));
 
 // Chain operations (only runs if previous operations were successful)
 const result = await Result.fromPromise(fetchData())
